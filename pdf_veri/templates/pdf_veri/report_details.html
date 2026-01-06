@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Verification History Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="min-h-screen bg-cover bg-center bg-fixed" style="background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1920&q=80');">
+        <div class="min-h-screen bg-black/70 backdrop-blur-sm p-8">
+            
+            <div class="max-w-6xl mx-auto">
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-3xl font-bold border-l-4 border-orange-500 pl-4">VERIFICATION HISTORY LOG</h1>
+                    <div class="flex gap-4">
+                        <button id="clearBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition font-bold flex items-center gap-2">
+                            🗑️ Clear Log
+                        </button>
+                        <a href="{% url 'home' %}" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg transition">← Back</a>
+                    </div>
+                </div>
+
+                <div class="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden shadow-2xl border border-white/20">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-white/10 text-orange-400 uppercase text-sm tracking-wider">
+                                <th class="p-4">Date & Time</th>
+                                <th class="p-4">File Name</th>
+                                <th class="p-4">Type</th>
+                                <th class="p-4">Status</th>
+                                <th class="p-4">Result Details</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/10">
+                            {% for item in history %}
+                            <tr class="hover:bg-white/5 transition">
+                                <td class="p-4 text-sm">{{ item.timestamp|date:"M d, Y H:i" }}</td>
+                                <td class="p-4 font-mono text-xs">{{ item.filename }}</td>
+                                <td class="p-4">
+                                    <span class="px-2 py-1 rounded text-xs font-bold {% if item.change_type == 'CHANGE' %}bg-indigo-500{% else %}bg-blue-500{% endif %}">
+                                        {{ item.change_type }}
+                                    </span>
+                                </td>
+                                <td class="p-4">
+                                    {% if item.status == "Success" %}
+                                        <span class="text-green-400 font-bold">● SUCCESS</span>
+                                    {% else %}
+                                        <span class="text-red-400 font-bold">● FAILED</span>
+                                    {% endif %}
+                                </td>
+                                <td class="p-4 text-gray-300 text-xs">{{ item.details }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="p-10 text-center text-gray-400 italic">No verification history found yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.getElementById('clearBtn').addEventListener('click', function() {
+        const password = prompt("Enter Admin Password to clear all records:");
+        
+        if (password === null) return; // User clicked cancel
+
+        // Create form data to send to Django
+        const formData = new FormData();
+        formData.append('password', password);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        fetch("{% url 'clear_history' %}", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Database cleared successfully.");
+                window.location.reload();
+            } else {
+                alert("Error: " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("Something went wrong.");
+        });
+    });
+    </script>
+</body>
+</html>

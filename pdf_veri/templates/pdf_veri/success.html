@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Verification Successful</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Modern Gradient Background */
+        .bg-success-gradient {
+            background: linear-gradient(-45deg, #11998e, #38ef7d, #00b09b, #96c93d);
+            background-size: 400% 400%;
+            animation: gradientMove 10s ease infinite;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Float animation for the checkmark */
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+</head>
+
+<body class="bg-success-gradient min-h-screen flex items-center justify-center px-4">
+    
+    <div class="bg-white/90 backdrop-blur-lg p-10 rounded-3xl shadow-2xl text-center max-w-lg border border-white/30 transform transition-all">
+        
+        <div class="floating text-6xl mb-6">
+            ✅
+        </div>
+
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">
+            Submitted Successfully
+        </h1>
+        
+        <p class="text-lg text-gray-600 mb-8">
+            Your 4M Declaration Form has been verified, stamped, and logged into the system.
+        </p>
+
+        <div class="space-y-4">
+            <a href="/" 
+               class="block w-full py-4 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-all shadow-lg hover:shadow-green-200 active:scale-95">
+                Go to Home
+            </a>
+            
+            <a href="{% url 'report_page' %}" 
+               class="block w-full py-4 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-all active:scale-95">
+                View History Report
+            </a>
+        </div>
+        
+        <p class="mt-8 text-xs text-gray-400 uppercase tracking-widest">
+            Verification ID: #{{ request.session.session_key|slice:":8" }}
+        </p>
+    </div>
+
+</body>
+</html>
